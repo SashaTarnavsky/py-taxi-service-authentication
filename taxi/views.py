@@ -14,9 +14,7 @@ def index(request):
     num_cars = Car.objects.count()
     num_manufacturers = Manufacturer.objects.count()
 
-    # Отримуємо кількість відвідувань із сесії, за замовчуванням 0
     num_visits = request.session.get("num_visits", 0)
-    # Збільшуємо лічильник і записуємо назад у сесію
     request.session["num_visits"] = num_visits + 1
 
     context = {
@@ -34,12 +32,13 @@ class ManufacturerListView(LoginRequiredMixin, generic.ListView):
     context_object_name = "manufacturer_list"
     template_name = "taxi/manufacturer_list.html"
     paginate_by = 5
+    queryset = Manufacturer.objects.order_by("name")
 
 
 class CarListView(LoginRequiredMixin, generic.ListView):
     model = Car
     paginate_by = 5
-    queryset = Car.objects.select_related("manufacturer")
+    queryset = Car.objects.select_related("manufacturer").order_by("model")
 
 
 class CarDetailView(LoginRequiredMixin, generic.DetailView):
@@ -49,6 +48,7 @@ class CarDetailView(LoginRequiredMixin, generic.DetailView):
 class DriverListView(LoginRequiredMixin, generic.ListView):
     model = Driver
     paginate_by = 5
+    queryset = Driver.objects.order_by("username")
 
 
 class DriverDetailView(LoginRequiredMixin, generic.DetailView):
